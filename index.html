@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1E8FD6">
+<title>Le Panier – Fotorallye</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --ciel: #1E8FD6;
+    --ciel-light: #DDF0FC;
+    --navy: #0E1B3D;
+    --rose: #FF7A9C;
+    --soleil: #FFC83D;
+    --turquoise: #19C3B1;
+    --turquoise-light: #E3F9F6;
+    --orange: #FF8A3D;
+    --blanc: #FFFDF8;
+    --display: 'Anton', Impact, 'Arial Narrow Bold', 'Helvetica Neue Condensed', sans-serif;
+    --body: 'Rubik', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --shadow: 4px 4px 0 var(--navy);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--blanc);
+    color: var(--navy);
+    font-family: var(--body);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100%;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .wrap { max-width: 560px; margin: 0 auto; padding: 8px 18px 56px; }
+
+  button { font-family: inherit; }
+  :focus-visible { outline: 3px solid var(--rose); outline-offset: 3px; }
+
+  /* ---------- Screens ---------- */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ---------- Sky band (hero + route header) ---------- */
+  .sky {
+    position: relative;
+    background: var(--ciel);
+    color: #fff;
+    padding-top: env(safe-area-inset-top, 0px);
+    overflow: hidden;
+  }
+  .sky-inner {
+    position: relative;
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 22px 18px 70px;
+    z-index: 1;
+  }
+  .sun {
+    position: absolute;
+    width: 210px; height: 210px;
+    border-radius: 50%;
+    background: var(--soleil);
+    top: -70px; right: -60px;
+  }
+  .wave {
+    position: absolute;
+    left: 0; right: 0; bottom: -1px;
+    width: 100%; height: 48px;
+    display: block;
+    z-index: 2;
+  }
+
+  .topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .wordmark {
+    font-family: var(--display);
+    font-size: 1.25rem;
+    letter-spacing: 0.02em;
+    color: #fff;
+  }
+  .wordmark small {
+    font-family: var(--body);
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0;
+    display: block;
+    color: var(--navy);
+    margin-top: 2px;
+  }
+
+  .sticker {
+    width: 118px; height: 118px;
+    flex-shrink: 0;
+    transform: rotate(-12deg);
+    filter: drop-shadow(3px 3px 0 var(--navy));
+    animation: stick 0.7s cubic-bezier(.2,1.4,.4,1) 0.15s both;
+  }
+  @keyframes stick {
+    from { transform: rotate(-160deg) scale(0.3); opacity: 0; }
+    to   { transform: rotate(-12deg) scale(1); opacity: 1; }
+  }
+
+  .hero-title {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(3rem, 15vw, 4.6rem);
+    line-height: 0.95;
+    margin: 18px 0 0;
+    text-transform: uppercase;
+    color: #fff;
+    text-shadow: 3px 3px 0 var(--navy);
+  }
+  .hero-sub {
+    margin: 16px 0 0;
+    font-size: 1.02rem;
+    line-height: 1.55;
+    font-weight: 500;
+    color: var(--navy);
+    max-width: 40ch;
+  }
+
+  /* ---------- Home content ---------- */
+  .brief {
+    margin-top: 8px;
+    background: #fff;
+    border: 2px solid var(--navy);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 18px 18px 16px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  .brief h2 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: 1.5rem;
+    margin: 0 0 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+  }
+  .brief p { margin: 0 0 10px; }
+  .brief p:last-child { margin-bottom: 0; }
+
+  .section-title {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: 1.9rem;
+    text-transform: uppercase;
+    margin: 34px 0 12px;
+    line-height: 1;
+  }
+
+  .group-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .group-btn {
+    appearance: none;
+    border: 2px solid var(--navy);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 12px 14px 10px;
+    cursor: pointer;
+    text-align: left;
+    color: var(--navy);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+  .group-btn .n { font-weight: 600; font-size: 0.9rem; }
+  .group-btn .l { font-family: var(--display); font-size: 2.6rem; line-height: 1; }
+  .group-btn:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--navy); }
+  .g0 { background: var(--ciel); color: #fff; }
+  .g1 { background: var(--rose); }
+  .g2 { background: var(--soleil); }
+  .g3 { background: var(--navy); color: #fff; box-shadow: 4px 4px 0 var(--rose); }
+  .g4 { background: var(--turquoise); }
+  .g5 { background: var(--orange); }
+
+  .meet {
+    margin-top: 30px;
+    background: var(--rose);
+    border: 2px solid var(--navy);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 16px 18px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+  .meet { flex-direction: column; align-items: flex-start !important; gap: 6px !important; }
+  .meet .clock {
+    font-family: var(--display);
+    font-size: 1.8rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .meet p { margin: 0; font-size: 0.92rem; line-height: 1.5; }
+
+  /* ---------- Route screen ---------- */
+  .sky.small .sky-inner { padding-bottom: 58px; }
+  .sky.small .sun { width: 150px; height: 150px; top: -60px; right: -40px; }
+  .route-top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 10px;
+  }
+  .route-top h1 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(2.2rem, 10vw, 3.4rem);
+    white-space: nowrap;
+    line-height: 0.95;
+    text-transform: uppercase;
+    margin: 0;
+    color: #fff;
+    text-shadow: 3px 3px 0 var(--navy);
+  }
+  .change-group {
+    background: #fff;
+    color: var(--navy);
+    border: 2px solid var(--navy);
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 var(--navy);
+    white-space: nowrap;
+  }
+
+  .change-group { display: inline-flex; align-items: center; gap: 4px; }
+  .change-group svg { width: 16px; height: 16px; }
+  .resume {
+    display: block; width: 100%; margin-top: 24px;
+    background: var(--navy); color: #fff;
+    border: 2px solid var(--navy); border-radius: 16px;
+    box-shadow: 4px 4px 0 var(--soleil);
+    padding: 14px 16px; font-size: 1rem; font-weight: 700; text-align: left; cursor: pointer;
+  }
+  .resume span { font-family: var(--display); font-weight: 400; font-size: 1.2rem; margin-left: 4px; }
+  .resume[hidden] { display: none; }
+  .progress {
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 18px;
+    background: #fff;
+    border: 2px solid var(--navy);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--soleil);
+    border-right: 2px solid var(--navy);
+    transition: width 0.35s ease;
+  }
+  .progress-fill[style*="width: 0%"] { border-right: 0; }
+  .progress-text {
+    font-family: var(--display);
+    font-size: 1.35rem;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .progress-text span { font-family: var(--body); font-size: 0.8rem; font-weight: 600; }
+
+  .stations {
+    margin-top: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .station {
+    background: #fff;
+    border: 2px solid var(--navy);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .station.final { border-width: 3px; box-shadow: 5px 5px 0 var(--rose); }
+  .station.final .station-num { background: var(--rose); }
+  .station.final.done .station-num { background: var(--turquoise); }
+  .station.done { background: var(--turquoise-light); }
+
+  .station-head {
+    appearance: none;
+    width: 100%;
+    border: 0;
+    background: none;
+    color: inherit;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+  }
+  .station.open .station-head { background: var(--ciel-light); }
+  .station.done.open .station-head { background: #CFF3EE; }
+  .station-num {
+    font-family: var(--display);
+    font-size: 1.15rem;
+    color: var(--navy);
+    background: var(--soleil);
+    border: 2px solid var(--navy);
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .station.done .station-num { background: var(--turquoise); }
+  .station-name {
+    flex: 1;
+    font-weight: 700;
+    font-size: 1.05rem;
+    line-height: 1.25;
+  }
+  .station-fr {
+    display: block;
+    font-weight: 400;
+    font-size: 0.82rem;
+    color: #3B4868;
+    margin-top: 2px;
+  }
+  .chevron {
+    width: 22px; height: 22px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+  .station.open .chevron { transform: rotate(180deg); }
+
+  .station-body {
+    display: none;
+    padding: 4px 16px 18px;
+    border-top: 2px solid var(--navy);
+  }
+  .station.open .station-body { display: block; }
+  .station-body p { font-size: 0.94rem; line-height: 1.6; margin: 12px 0 0; }
+
+  .task {
+    margin-top: 14px;
+    background: #FFF1F4;
+    border: 2px dashed var(--rose);
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+  .task-extra { background: #FFF8E1; border-color: var(--soleil); }
+  .task-extra .task-tag { background: var(--soleil); }
+  .history-photo { margin: 12px 0 2px; }
+  .history-photo img {
+    display: block; width: 100%; height: auto;
+    border: 2px solid var(--navy); border-radius: 10px;
+    filter: grayscale(1);
+  }
+  .history-photo figcaption { font-size: 0.76rem; line-height: 1.45; color: #3B4868; margin-top: 6px; }
+  .solution { margin-top: 12px; border: 2px solid var(--navy); border-radius: 12px; background: var(--ciel-light); }
+  .solution summary { cursor: pointer; font-weight: 700; font-size: 0.9rem; padding: 10px 14px; list-style-position: inside; }
+  .solution p { margin: 0 !important; padding: 0 14px 12px; }
+  .nav-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 14px;
+    background: var(--soleil); color: var(--navy);
+    border: 2px solid var(--navy); border-radius: 999px;
+    box-shadow: 2px 2px 0 var(--navy);
+    padding: 8px 14px 8px 11px;
+    font-weight: 700; font-size: 0.9rem; text-decoration: none;
+  }
+  .nav-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .nav-btn:active { transform: translate(2px,2px); box-shadow: 0 0 0 var(--navy); }
+  .nav-btn.small { font-size: 0.82rem; padding: 6px 12px 6px 9px; margin-top: 10px; background: #fff; }
+  .task-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--rose);
+    color: var(--navy);
+    font-weight: 700;
+    font-size: 0.8rem;
+    padding: 3px 10px 3px 8px;
+    border-radius: 999px;
+  }
+  .task-tag svg { width: 15px; height: 15px; }
+  .task p { margin-top: 8px; font-weight: 500; }
+
+  .done-toggle {
+    margin-top: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .done-toggle input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .checkbox {
+    width: 28px; height: 28px;
+    border: 2px solid var(--navy);
+    border-radius: 8px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 2px 2px 0 var(--navy);
+  }
+  .done-toggle input:checked + .checkbox { background: var(--turquoise); }
+  .done-toggle input:focus-visible + .checkbox { outline: 3px solid var(--rose); outline-offset: 3px; }
+  .checkbox svg { width: 16px; height: 16px; opacity: 0; }
+  .done-toggle input:checked + .checkbox svg { opacity: 1; }
+  .done-toggle .label { font-size: 0.92rem; font-weight: 600; }
+
+  .finish {
+    margin-top: 26px;
+    position: relative;
+    overflow: hidden;
+    background: var(--rose);
+    border: 2px solid var(--navy);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 22px 20px;
+  }
+  .finish::after {
+    content: "";
+    position: absolute;
+    width: 110px; height: 110px;
+    border-radius: 50%;
+    background: var(--soleil);
+    right: -30px; top: -30px;
+  }
+  .finish h2 {
+    position: relative;
+    z-index: 1;
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: 2.2rem;
+    line-height: 1;
+    text-transform: uppercase;
+    margin: 0;
+    max-width: 12ch;
+  }
+  .finish p { position: relative; z-index: 1; font-size: 0.95rem; line-height: 1.6; margin: 10px 0 0; }
+
+  footer {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 0.78rem;
+    color: #3B4868;
+  }
+
+
+  @media (prefers-reduced-motion: reduce) {
+    .sticker { animation: none; }
+    .progress-fill, .chevron, .group-btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Wiederverwendete Formen -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <path id="wave-path" d="M0,24 C60,6 120,6 180,24 C240,42 300,42 360,24 C420,6 480,6 540,24 C600,42 660,42 720,24 L720,48 L0,48 Z"/>
+  </defs>
+</svg>
+
+<!-- ============ SCREEN 1: HOME ============ -->
+<section class="screen active" id="screen-home">
+  <header class="sky">
+    <div class="sun" aria-hidden="true"></div>
+    <div class="sky-inner">
+      <div class="topline">
+        <div class="wordmark">Le Panier<small>Kursfahrt Marseille 2026, Swz</small></div>
+        <!-- Eigenes Sticker-Logo -->
+        <svg class="sticker" viewBox="0 0 120 120" role="img" aria-label="Logo Fotorallye Le Panier">
+          <defs>
+            <path id="ring" d="M60,60 m-44,0 a44,44 0 1,1 88,0 a44,44 0 1,1 -88,0"/>
+            <clipPath id="inner"><circle cx="60" cy="60" r="31"/></clipPath>
+          </defs>
+          <circle cx="60" cy="60" r="57" fill="#FF7A9C" stroke="#0E1B3D" stroke-width="3"/>
+          <text font-family="Rubik, system-ui, sans-serif" font-weight="700" font-size="11" fill="#0E1B3D" letter-spacing="1.6">
+            <textPath href="#ring">FOTORALLYE ✦ MARSEILLE 13002 ✦</textPath>
+          </text>
+          <circle cx="60" cy="60" r="31" fill="#1E8FD6" stroke="#0E1B3D" stroke-width="3"/>
+          <g clip-path="url(#inner)">
+            <circle cx="60" cy="58" r="12" fill="#FFC83D"/>
+            <path d="M26,70 C34,64 42,64 50,70 C58,76 66,76 74,70 C82,64 90,64 98,70 L98,95 L26,95 Z" fill="#fff"/>
+            <path d="M26,78 C34,72 42,72 50,78 C58,84 66,84 74,78 C82,72 90,72 98,78 L98,95 L26,95 Z" fill="#19C3B1"/>
+          </g>
+          <circle cx="60" cy="60" r="31" fill="none" stroke="#0E1B3D" stroke-width="3"/>
+        </svg>
+      </div>
+
+      <h1 class="hero-title">Findet Marseille hinter der Ecke.</h1>
+      <p class="hero-sub">Elf Stationen quer durchs älteste Viertel der Stadt und hinunter an den Hafen. Kleine Aufgabe, ein Foto, weiter zur nächsten Gasse. Zum Schluss treffen sich alle Gruppen im Secondhand-Laden Kilo Shop. Rechnet mit gut zwei Stunden, plus Zeit zum Stöbern.</p>
+    </div>
+    <svg class="wave" viewBox="0 0 720 48" preserveAspectRatio="none" aria-hidden="true"><use href="#wave-path" fill="#FFFDF8"/></svg>
+  </header>
+
+  <div class="wrap">
+    <div class="brief">
+      <h2>So läuft's</h2>
+      <p>Wählt unten eure Gruppe. Jede Gruppe startet an einer anderen Station, damit ihr euch nicht alle auf denselben Stufen stapelt. Am Ende habt ihr trotzdem alle elf gesehen. Die letzte Station ist für alle gleich: der Kilo Shop.</p>
+      <p>Bei jeder Station: hinlaufen, Aufgabe lesen, Foto machen, Häkchen setzen. Keine Reihenfolge-Pflicht, aber bleibt in eurer Kleingruppe zusammen.</p>
+    </div>
+
+    <button class="resume" id="btn-resume" hidden>Weiter mit eurer Route <span id="resume-group"></span></button>
+
+    <h2 class="section-title">Eure Gruppe</h2>
+    <div class="group-grid" id="group-grid"></div>
+
+    <div class="meet">
+      <div class="clock">Dîner</div>
+      <p>Nach der Rallye habt ihr frei: Ihr könnt im Kilo Shop bleiben oder auf eigene Faust die Stadt erkunden. Achtet nur darauf, dass ihr <b>spätestens um 18:30 Uhr im Meininger in La Joliette</b> seid. Plant den Rückweg ein, mit eurer RTM-Karte per Tram oder zu Fuß, vom Kilo Shop aus etwa 30 Minuten. Wir sehen uns zum Abendessen im Hotel. Gebt in der WhatsApp-Gruppe kurz Bescheid, wenn ihr angekommen seid. Bei Fragen oder Problemen: Handynummer der Lehrkraft in der WhatsApp-Gruppe.<br><a class="nav-btn small" href="https://www.google.com/maps/dir/?api=1&amp;travelmode=transit&amp;destination=MEININGER%20Hotel%20Marseille%20Centre%20La%20Joliette" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="#0E1B3D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Route zum Hotel</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SCREEN 2: ROUTE ============ -->
+<section class="screen" id="screen-route">
+  <header class="sky small">
+    <div class="sun" aria-hidden="true"></div>
+    <div class="sky-inner">
+      <div class="wordmark">Le Panier<small>Fotorallye</small></div>
+      <div class="route-top">
+        <h1 id="route-title">Gruppe A</h1>
+        <button class="change-group" id="btn-change-group"><svg viewBox="0 0 24 24" fill="none" stroke="#0E1B3D" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>Startseite</button>
+      </div>
+    </div>
+    <svg class="wave" viewBox="0 0 720 48" preserveAspectRatio="none" aria-hidden="true"><use href="#wave-path" fill="#FFFDF8"/></svg>
+  </header>
+
+  <div class="wrap">
+    <div class="progress">
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="progress-text" id="progress-text">0/12</div>
+    </div>
+
+    <div class="stations" id="stations-list"></div>
+
+    <div class="finish" id="finish-block" style="display:none;">
+      <h2>Alle Stationen geschafft!</h2>
+      <p>Stark gemacht. Stöbert in Ruhe im Kilo Shop oder erkundet auf eigene Faust die Stadt. Seid spätestens um <b>18:30 Uhr im Hotel</b>, wir sehen uns beim Abendessen. Vergesst nicht, in der WhatsApp-Gruppe Bescheid zu geben, wenn ihr angekommen seid.</p>
+      <a class="nav-btn" style="position:relative;z-index:1" href="https://www.google.com/maps/dir/?api=1&amp;travelmode=transit&amp;destination=MEININGER%20Hotel%20Marseille%20Centre%20La%20Joliette" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="#0E1B3D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Route zum Hotel</a>
+    </div>
+
+    <footer>Le Panier Fotorallye, Kursfahrt Marseille 2026, Swz</footer>
+  </div>
+</section>
+
+<script>
+(function () {
+  const STATIONS = [
+    {
+      name: "Place de Lenche",
+      nav: "Place de Lenche, 13002 Marseille",
+      fr: "Ältester Platz der Stadt, über dem alten Hafen",
+      info: "Hier lag vermutlich schon die Agora der griechischen Gründungsstadt Massalia, über 2600 Jahre alt.",
+      task: "Foto von der Terrasse mit Blick Richtung Vieux Port. Notiert eine Vermutung: Warum war genau dieser Platz für die ersten Siedler so attraktiv?"
+    },
+    {
+      name: "Montée des Accoules",
+      nav: "Montée des Accoules, 13002 Marseille",
+      fr: "Treppengasse mit Blick über die Dächer, und einem Seifenladen unterwegs",
+      info: "Am Fuß der Treppe liegt Bazar Caesar Soap, ein kleiner Laden für Marseiller Seife in allen möglichen Formen. Seife wird in Marseille schon seit dem Mittelalter gesiedet. Berühmt wurde sie durch ein königliches Edikt von 1688 unter Ludwig XIV.: Echte Savon de Marseille durfte nur noch aus reinem Pflanzenöl, vor allem Olivenöl, hergestellt werden. Daher kommt auch der typische Würfel mit dem Stempel „72 % d'huile“ für den Ölanteil. Um 1900 war Marseille eine der großen Seifenstädte Europas, heute arbeiten nur noch wenige traditionelle Siedereien.",
+      task: "Steigt die Treppe hoch und zählt die Stufen. Schaut kurz bei Bazar Caesar Soap rein und riecht unbedingt an der Lavendelseife. Foto von der ungewöhnlichsten Seifenform, die ihr findet."
+    },
+    {
+      name: "Place des Treize-Cantons",
+      nav: "Place des Treize-Cantons, 13002 Marseille",
+      fr: "Kleiner Platz zwischen Rue du Panier und Rue de l'Évêché",
+      info: "Der Platz ist nach einer Herberge benannt, die ein Schweizer im 17. Jahrhundert hier eröffnet hat: „Les treize cantons“, denn die Schweiz bestand damals aus dreizehn Kantonen. Heute kennen ihn viele Franzosen aus der Fernsehserie „Plus belle la vie“.",
+      task: "Sucht das Haus Nummer 4 am Platz und macht ein Gruppenfoto davor. Dann ratet: Welcher berühmte Frauenheld und Abenteurer aus dem 18. Jahrhundert hat hier in der Herberge übernachtet?",
+      solution: "Giacomo Casanova. Der Venezianer war im 18. Jahrhundert quer durch Europa unterwegs und hat auf seiner Reise durch Marseille in der Herberge der Treize Cantons gewohnt, im Haus Nummer 4. Heute ist dort die Maison de la Boule Bleue, ein Laden rund ums Boule-Spiel."
+    },
+    {
+      name: "Street Art Panier",
+      nav: "Rue du Panier, 13002 Marseille",
+      fr: "Wechselnde Wandmalereien in den Gassen",
+      info: "Le Panier ist für seine Street Art bekannt, die sich ständig verändert.",
+      task: "Sucht euch drei Wandbilder aus, die euch besonders gut gefallen, und lasst euch davor von jemandem fotografieren."
+    },
+    {
+      name: "Vieille Charité",
+      nav: "La Vieille Charité, 2 Rue de la Charité, 13002 Marseille",
+      fr: "Ehemaliges Armenhospiz, heute Kulturzentrum",
+      info: "Der ovale Innenhof mit der Kapelle ist frei zugänglich, auch ohne Museumsticket.",
+      task: "Foto vom Innenhof mit der Kapelle in der Mitte. Hier wurden im 17. Jahrhundert arme Menschen und Bettler untergebracht, oft nicht freiwillig. Schaut euch den Bau an: Woran erkennt ihr, dass es hier auch um Kontrolle ging und nicht nur um Fürsorge?"
+    },
+    {
+      name: "Taofe",
+      nav: "Taofe, 2 Rue Saint-Mathieu, 13002 Marseille",
+      fr: "Kleiner Wein- und Kaffeeladen, montags bis 15:30 Uhr geöffnet",
+      info: "Ein Café, das zwei befreundete Architekten eingerichtet haben. Anderer Vibe als ein klassisches französisches Café.",
+      task: "Foto von der Fassade oder drinnen (falls noch geöffnet). Diskutiert kurz: Was unterscheidet so einen Laden von einem klassischen Café?"
+    },
+    {
+      name: "Place de Lorette",
+      nav: "Place de Lorette, 13002 Marseille",
+      fr: "Kleiner, belebter Platz mit Cafés mitten im Viertel",
+      info: "Einer der Treffpunkte im Panier, wo Anwohner, Künstler und Besucher nebeneinander sitzen.",
+      task: "Setzt euch kurz hin und beobachtet: Wer sind die Leute hier, eher Touristen, Anwohner oder beides? Foto vom Platz."
+    },
+    {
+      name: "Place des Moulins",
+      nav: "Place des Moulins, 13002 Marseille",
+      fr: "Ruhiger Platz mit Platanen, früher Standort von Windmühlen",
+      info: "Der Name erinnert an eine Zeit, in der hier mehrere Mühlen standen.",
+      task: "Gruppenfoto auf dem Platz. Dann geht ihr auf Spurensuche: Hier oben standen früher Windmühlen. Sucht rund um den Platz nach Hinweisen darauf, zum Beispiel runde Turmreste, die heute in Häuser eingebaut sind, alte Mauern, Schilder oder Straßennamen. Fotografiert jeden Beleg, den ihr findet."
+    },
+    {
+      name: "Hôtel de Ville",
+      nav2: "Maison Diamantée, Rue de la Prison, 13002 Marseille",
+      nav: "Hôtel de Ville, Quai du Port, 13002 Marseille",
+      fr: "Barockes Rathaus von 1673, am Rand des Viertels",
+      info: "Eines der wenigen Gebäude, das die Zerstörungen im Panier während des Zweiten Weltkriegs überstanden hat. Von hier geht's runter zum Hafen.",
+      task: "Foto von der Fassade. Zählt, wie viele Flaggen dort hängen, und überlegt gemeinsam, wofür sie stehen könnten.",
+      task2: "Geht einmal ums Rathaus herum in die Rue de la Prison. Dort steht die Maison Diamantée, eines der ältesten Häuser der Stadt, erkennbar an den spitz behauenen Steinen der Fassade. Im Januar 1943 räumten deutsche Besatzer zusammen mit der französischen Polizei das Hafenviertel: rund 20.000 Menschen mussten ihre Wohnungen verlassen, über 1.600 wurden deportiert, darunter viele Jüdinnen und Juden. Im Februar sprengte die Wehrmacht rund 1.500 Gebäude. Die Maison Diamantée und das Rathaus blieben stehen. Vergleicht das historische Foto unten mit dem, was ihr heute seht, und fotografiert den Blick, der euch den Unterschied zwischen damals und heute am deutlichsten zeigt.",
+      photo: {
+        src: "https://upload.wikimedia.org/wikipedia/commons/4/4f/Bundesarchiv_Bild_101I-027-1480-28,_Marseille,_Zerst%C3%B6rung_des_alten_Hafenviertels.jpg",
+        alt: "Trümmer des gesprengten Hafenviertels von Marseille, 1943",
+        caption: "Das gesprengte Hafenviertel, Februar 1943. Aufnahme einer Propagandakompanie der Wehrmacht. Bundesarchiv, Bild 101I-027-1480-28, CC BY-SA 3.0 DE."
+      }
+    },
+    {
+      name: "Die Brücke der Ratsherren",
+      nav: "Rue de la Loge, 13002 Marseille",
+      fr: "Rue de la Loge, direkt hinter dem Hôtel de Ville",
+      info: "Das Rathaus hat eine seltsame Besonderheit: Es gibt keine Treppe vom Erdgeschoss in den ersten Stock. Wer nach oben wollte, musste erst ins Gebäude dahinter und dann über eine Brücke hinüber. Die erste Brücke war aus Holz, die heutige steinerne Galerie stammt aus den 1780er Jahren.",
+      task: "Geht in die schmale Rue de la Loge zwischen Rathaus und Hinterhaus und findet die Brücke über euren Köpfen. Macht ein Foto von unten. Dann ratet: Warum sollte es im Rathaus keine Treppe geben? Tipp: Unten und oben saßen zwei ganz verschiedene Gruppen.",
+      solution: "Im Erdgeschoss saß die „Loge“, der Treffpunkt der Kaufleute. Im ersten Stock regierten die Ratsherren der Stadt, die Échevins. Beide Gruppen sollten bewusst getrennt bleiben, also bekamen die Ratsherren einen eigenen Zugang über die Brücke. Der Straßenname Rue de la Loge erinnert bis heute an die Kaufleute."
+    },
+    {
+      name: "L'Ombrière",
+      nav: "L'Ombrière, Quai de la Fraternité, 13001 Marseille",
+      fr: "Spiegelndes Vordach am Quai de la Fraternité, Vieux Port",
+      info: "2013 von Stararchitekt Norman Foster gebaut. Die verspiegelte Unterseite wirft Himmel, Wasser und Passanten zurück.",
+      task: "Stellt euch darunter und macht ein Foto von unten nach oben. Sucht das ungewöhnlichste Spiegel-Selfie-Motiv, das ihr findet."
+    },
+    {
+      name: "Kilo Shop",
+      nav: "Kilo Shop, 11 Rue Saint-Ferréol, 13001 Marseille",
+      final: true,
+      fr: "Letzte Station für alle: riesige Secondhand-Fundgrube, 11 Rue Saint-Ferréol",
+      info: "Auf rund 600 m² hängen und stapeln sich tausende Secondhand-Teile, von Hawaiihemden bis Jeansjacken. Bezahlt wird nicht pro Stück, sondern nach Gewicht: Ein farbiger Punkt am Etikett zeigt, wie viel ein Kilo kostet. Hier ist Wühlen ausdrücklich erwünscht.",
+      task: "Geschafft, hier endet die Rallye! Sucht euch ein Teil aus, das euch gefällt, probiert es an und macht ein Foto von euch damit. Bonus: Legt euer Outfit auf die Waage und rechnet aus, was es kosten würde. Danach habt ihr Zeit zum Stöbern und Kaufen. Was ihr nicht mitnehmt, bitte ordentlich zurückhängen."
+    }
+  ];
+
+  // Anzahl der Gruppen – hier anpassen, sobald die Einteilung feststeht.
+  const NUM_GROUPS = 6;
+  const GROUP_LETTERS = Array.from({ length: NUM_GROUPS }, (_, i) => String.fromCharCode(65 + i));
+  const GROUP_START = {};
+  // Rundkurs = alle Stationen außer der Abschlussstation (Kilo Shop)
+  const LOOP_IDX = STATIONS.map((s, i) => i).filter(i => !STATIONS[i].final);
+  const FINAL_IDX = STATIONS.map((s, i) => i).filter(i => STATIONS[i].final);
+  GROUP_LETTERS.forEach((letter, i) => {
+    GROUP_START[letter] = Math.round((i * LOOP_IDX.length) / NUM_GROUPS) % LOOP_IDX.length;
+  });
+
+  const STORAGE_PREFIX = "panier-rallye-";
+  function mapsLink(q) {
+    return "https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=" + encodeURIComponent(q);
+  }
+  const PIN = '<svg viewBox="0 0 24 24" fill="none" stroke="#0E1B3D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>';
+  const CHEVRON = '<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="#0E1B3D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg>';
+  const CAMERA = '<svg viewBox="0 0 24 24" fill="none" stroke="#0E1B3D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>';
+  const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="#0E1B3D" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>';
+
+  const screenHome = document.getElementById("screen-home");
+  const screenRoute = document.getElementById("screen-route");
+  const stationsList = document.getElementById("stations-list");
+  const routeTitle = document.getElementById("route-title");
+  const progressFill = document.getElementById("progress-fill");
+  const progressText = document.getElementById("progress-text");
+  const finishBlock = document.getElementById("finish-block");
+
+  function store(key, value) { try { localStorage.setItem(key, value); } catch (e) {} }
+  function read(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+
+  function orderedStationsFor(group) {
+    const start = GROUP_START[group] || 0;
+    const n = LOOP_IDX.length;
+    const ordered = [];
+    for (let i = 0; i < n; i++) {
+      const idx = LOOP_IDX[(start + i) % n];
+      ordered.push({ ...STATIONS[idx], originalIndex: idx });
+    }
+    FINAL_IDX.forEach(idx => ordered.push({ ...STATIONS[idx], originalIndex: idx }));
+    return ordered;
+  }
+
+  function loadDone(group) {
+    try { const raw = read(STORAGE_PREFIX + group); return raw ? JSON.parse(raw) : {}; }
+    catch (e) { return {}; }
+  }
+  function saveDone(group, map) { store(STORAGE_PREFIX + group, JSON.stringify(map)); }
+
+  function renderRoute(group) {
+    routeTitle.textContent = "Gruppe " + group;
+    const ordered = orderedStationsFor(group);
+    const doneMap = loadDone(group);
+    stationsList.innerHTML = "";
+
+    ordered.forEach((st, i) => {
+      const isDone = !!doneMap[st.originalIndex];
+      const card = document.createElement("div");
+      card.className = "station" + (isDone ? " done" : "") + (st.final ? " final" : "");
+      card.innerHTML = `
+        <button class="station-head" aria-expanded="false">
+          <span class="station-num">${i + 1}</span>
+          <span class="station-name">${st.name}<span class="station-fr">${st.fr}</span></span>
+          ${CHEVRON}
+        </button>
+        <div class="station-body">
+          <a class="nav-btn" href="${mapsLink(st.nav)}" target="_blank" rel="noopener">${PIN}Route zu Fuß in Google Maps</a>
+          <p>${st.info}</p>
+          <div class="task">
+            <span class="task-tag">${CAMERA}Aufgabe</span>
+            <p>${st.task}</p>
+          </div>
+          ${st.solution ? `<details class="solution">
+            <summary>Auflösung anzeigen</summary>
+            <p>${st.solution}</p>
+          </details>` : ""}
+          ${st.task2 ? `<div class="task task-extra">
+            <span class="task-tag">${CAMERA}Um die Ecke</span>
+            <p>${st.task2}</p>
+            ${st.nav2 ? `<a class="nav-btn small" href="${mapsLink(st.nav2)}" target="_blank" rel="noopener">${PIN}Route zur Maison Diamantée</a>` : ""}
+            ${st.photo ? `<figure class="history-photo">
+              <img src="${st.photo.src}" alt="${st.photo.alt}" loading="lazy" onerror="this.parentNode.style.display='none'">
+              <figcaption>${st.photo.caption}</figcaption>
+            </figure>` : ""}
+          </div>` : ""}
+          <label class="done-toggle">
+            <input type="checkbox" data-orig="${st.originalIndex}" ${isDone ? "checked" : ""}>
+            <span class="checkbox">${CHECK}</span>
+            <span class="label">Station erledigt</span>
+          </label>
+        </div>`;
+      stationsList.appendChild(card);
+
+      const head = card.querySelector(".station-head");
+      head.addEventListener("click", () => {
+        const open = card.classList.toggle("open");
+        head.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+
+      card.querySelector('input[type="checkbox"]').addEventListener("change", (e) => {
+        const origIdx = parseInt(e.target.getAttribute("data-orig"), 10);
+        const map = loadDone(group);
+        map[origIdx] = e.target.checked;
+        saveDone(group, map);
+        card.classList.toggle("done", e.target.checked);
+        updateProgress(group);
+      });
+    });
+
+    updateProgress(group);
+  }
+
+  function updateProgress(group) {
+    const doneMap = loadDone(group);
+    const total = STATIONS.length;
+    const doneCount = Object.values(doneMap).filter(Boolean).length;
+    progressFill.style.width = Math.round((doneCount / total) * 100) + "%";
+    progressText.innerHTML = doneCount + "/" + total + ' <span>geschafft</span>';
+    finishBlock.style.display = doneCount === total ? "block" : "none";
+  }
+
+  function show(screen) {
+    screenHome.classList.toggle("active", screen === "home");
+    screenRoute.classList.toggle("active", screen === "route");
+    window.scrollTo(0, 0);
+  }
+
+  const groupGrid = document.getElementById("group-grid");
+  GROUP_LETTERS.forEach((letter, i) => {
+    const btn = document.createElement("button");
+    btn.className = "group-btn g" + (i % 6);
+    btn.innerHTML = `<span class="n">Gruppe</span><span class="l">${letter}</span>`;
+    btn.addEventListener("click", () => {
+      store("panier-current-group", letter);
+      renderRoute(letter);
+      show("route");
+    });
+    groupGrid.appendChild(btn);
+  });
+
+  const resumeBtn = document.getElementById("btn-resume");
+  function updateResume() {
+    const g = read("panier-current-group");
+    if (g && Object.prototype.hasOwnProperty.call(GROUP_START, g)) {
+      document.getElementById("resume-group").textContent = "(Gruppe " + g + ")";
+      resumeBtn.hidden = false;
+    } else {
+      resumeBtn.hidden = true;
+    }
+  }
+  resumeBtn.addEventListener("click", () => {
+    const g = read("panier-current-group");
+    if (g) { renderRoute(g); show("route"); }
+  });
+  document.getElementById("btn-change-group").addEventListener("click", () => { updateResume(); show("home"); });
+
+  const savedGroup = read("panier-current-group");
+  if (savedGroup && Object.prototype.hasOwnProperty.call(GROUP_START, savedGroup)) {
+    renderRoute(savedGroup);
+    show("route");
+  }
+})();
+</script>
+</body>
+</html>
